@@ -18,9 +18,28 @@ type NavItem struct {
 	Path  string `json:"path"`
 }
 
-// NavHandler returns the navigation structure
-func NavHandler(c *gin.Context) {
-	nav := []NavItem{
+// UIService defines the behaviour to produce UI components/data.
+// This allows swapping implementations for testing or future data sources.
+type UIService interface {
+	Nav() []NavItem
+	Home() []Component
+	Products() []Component
+	Profile() []Component
+	ListDetail() []Component
+	Detail(id string) ([]Component, bool)
+	Forms() []Component
+	Articles() []Component
+}
+
+// DefaultUIService is the in-repo implementation of UIService.
+type DefaultUIService struct{}
+
+// NewDefaultUIService constructs the default UI service implementation.
+func NewDefaultUIService() UIService { return &DefaultUIService{} }
+
+// Service methods (migrate logic from previous handlers)
+func (s *DefaultUIService) Nav() []NavItem {
+	return []NavItem{
 		{Label: "Home", Path: "/home"},
 		{Label: "Products", Path: "/products"},
 		{Label: "Profile", Path: "/profile"},
@@ -28,22 +47,18 @@ func NavHandler(c *gin.Context) {
 		{Label: "Forms", Path: "/forms"},
 		{Label: "Articles", Path: "/articles"},
 	}
-	c.JSON(http.StatusOK, nav)
 }
 
-// HomeHandler returns the home screen components
-func HomeHandler(c *gin.Context) {
-	comps := []Component{
+func (s *DefaultUIService) Home() []Component {
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "Welcome Back!", "level": 1}},
 		{Type: "paragraph", Props: map[string]interface{}{"text": "Explore new features and products."}},
 		{Type: "image", Props: map[string]interface{}{"src": "https://picsum.photos/600/200", "alt": "Banner"}},
 		{Type: "button", Props: map[string]interface{}{"text": "View Products", "actionId": "navigate_products"}},
 	}
-	c.JSON(http.StatusOK, comps)
 }
 
-// ProductsHandler returns a product list
-func ProductsHandler(c *gin.Context) {
+func (s *DefaultUIService) Products() []Component {
 	products := []map[string]interface{}{
 		{"name": "Widget Pro", "price": "$99", "imageSrc": "https://picsum.photos/150/150?random=1"},
 		{"name": "Gadget Plus", "price": "$149", "imageSrc": "https://picsum.photos/150/150?random=2"},
@@ -55,28 +70,24 @@ func ProductsHandler(c *gin.Context) {
 		productCards = append(productCards, Component{Type: "product_card", Props: p})
 	}
 
-	comps := []Component{
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "Featured Products", "level": 2}},
 		{Type: "product_list", Props: map[string]interface{}{"items": productCards}},
 		{Type: "button", Props: map[string]interface{}{"text": "Go to Home", "actionId": "navigate_home"}},
 	}
-	c.JSON(http.StatusOK, comps)
 }
 
-// ProfileHandler returns a profile screen
-func ProfileHandler(c *gin.Context) {
-	comps := []Component{
+func (s *DefaultUIService) Profile() []Component {
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "User Profile", "level": 3}},
 		{Type: "stat_item", Props: map[string]interface{}{"label": "Email", "value": "user@example.com"}},
 		{Type: "divider", Props: map[string]interface{}{}},
 		{Type: "stat_item", Props: map[string]interface{}{"label": "Joined", "value": "Jan 2023"}},
 		{Type: "button", Props: map[string]interface{}{"text": "Logout", "actionId": "user_logout"}},
 	}
-	c.JSON(http.StatusOK, comps)
 }
 
-// ListDetailHandler returns a list of items for list-and-detail screen
-func ListDetailHandler(c *gin.Context) {
+func (s *DefaultUIService) ListDetail() []Component {
 	items := []map[string]interface{}{
 		{"id": "1", "title": "Item 1", "description": "Description for item 1"},
 		{"id": "2", "title": "Item 2", "description": "Description for item 2"},
@@ -88,17 +99,13 @@ func ListDetailHandler(c *gin.Context) {
 		listItems = append(listItems, Component{Type: "list_item", Props: item})
 	}
 
-	comps := []Component{
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "List & Detail", "level": 2}},
 		{Type: "list", Props: map[string]interface{}{"items": listItems}},
 	}
-	c.JSON(http.StatusOK, comps)
 }
 
-// DetailHandler returns the detail for a specific item
-func DetailHandler(c *gin.Context) {
-	id := c.Param("id")
-	// Mock data
+func (s *DefaultUIService) Detail(id string) ([]Component, bool) {
 	details := map[string]map[string]interface{}{
 		"1": {"title": "Item 1", "fullDescription": "Full description for item 1. This is more detailed.", "image": "https://picsum.photos/300/200?random=1"},
 		"2": {"title": "Item 2", "fullDescription": "Full description for item 2. This is more detailed.", "image": "https://picsum.photos/300/200?random=2"},
@@ -112,27 +119,24 @@ func DetailHandler(c *gin.Context) {
 			{Type: "paragraph", Props: map[string]interface{}{"text": detail["fullDescription"].(string)}},
 			{Type: "button", Props: map[string]interface{}{"text": "Back to List", "actionId": "navigate_list-detail"}},
 		}
-		c.JSON(http.StatusOK, comps)
-	} else {
-		c.JSON(http.StatusNotFound, []Component{{Type: "paragraph", Props: map[string]interface{}{"text": "Item not found"}}})
+		return comps, true
 	}
+
+	return []Component{{Type: "paragraph", Props: map[string]interface{}{"text": "Item not found"}}}, false
 }
 
-// FormsHandler returns a form screen
-func FormsHandler(c *gin.Context) {
-	comps := []Component{
+func (s *DefaultUIService) Forms() []Component {
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "Contact Form", "level": 2}},
 		{Type: "form_input", Props: map[string]interface{}{"label": "Name", "name": "name", "type": "text"}},
 		{Type: "form_input", Props: map[string]interface{}{"label": "Email", "name": "email", "type": "email"}},
 		{Type: "form_input", Props: map[string]interface{}{"label": "Message", "name": "message", "type": "textarea"}},
 		{Type: "form_button", Props: map[string]interface{}{"text": "Submit", "actionId": "form_submit"}},
 	}
-	c.JSON(http.StatusOK, comps)
 }
 
-// ArticlesHandler returns an articles screen
-func ArticlesHandler(c *gin.Context) {
-	comps := []Component{
+func (s *DefaultUIService) Articles() []Component {
+	return []Component{
 		{Type: "heading", Props: map[string]interface{}{"text": "Latest Articles", "level": 2}},
 		{Type: "article", Props: map[string]interface{}{
 			"title":   "Article 1",
@@ -147,5 +151,44 @@ func ArticlesHandler(c *gin.Context) {
 			"date":    "2023-10-02",
 		}},
 	}
-	c.JSON(http.StatusOK, comps)
+}
+
+// Adapter handlers: convert UIService results into HTTP responses.
+func NavHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Nav()) }
+}
+
+func HomeHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Home()) }
+}
+
+func ProductsHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Products()) }
+}
+
+func ProfileHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Profile()) }
+}
+
+func ListDetailHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.ListDetail()) }
+}
+
+func DetailHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		if comps, ok := svc.Detail(id); ok {
+			c.JSON(http.StatusOK, comps)
+		} else {
+			c.JSON(http.StatusNotFound, comps)
+		}
+	}
+}
+
+func FormsHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Forms()) }
+}
+
+func ArticlesHandler(svc UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Articles()) }
 }

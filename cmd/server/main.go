@@ -16,7 +16,11 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	apiRouter := r.Group("/api/ui")
-	api.RegisterRoutes(apiRouter)
+	// use the default service implementation
+	svc := api.NewDefaultUIService()
+	// wire routes via the Routes abstraction
+	routes := api.NewDefaultRoutes(svc)
+	routes.Register(apiRouter)
 
 	// Simple health
 	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
