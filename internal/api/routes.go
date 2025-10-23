@@ -34,6 +34,8 @@ func (dr *DefaultRoutes) Register(rg *gin.RouterGroup) {
 	rg.GET("/detail/:id", DetailHandler(dr.svc))
 	rg.GET("/forms", FormsHandler(dr.svc))
 	rg.GET("/articles", ArticlesHandler(dr.svc))
+	// Combined overview page assembled from multiple sub-screens
+	rg.GET("/combined", CombinedHandler(dr.svc))
 }
 
 // RegisterRoutes preserves the original helper signature while delegating to

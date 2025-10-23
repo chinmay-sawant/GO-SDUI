@@ -27,6 +27,7 @@ type UIService interface {
 	Detail(id string) ([]Component, bool)
 	Forms() []Component
 	Articles() []Component
+	Combined() []Component
 }
 
 // DefaultUIService is the in-repo implementation of UIService.
@@ -44,6 +45,7 @@ func (s *DefaultUIService) Nav() []NavItem {
 		{Label: "List & Detail", Path: "/list-detail"},
 		{Label: "Forms", Path: "/forms"},
 		{Label: "Articles", Path: "/articles"},
+		{Label: "Combined", Path: "/combined"},
 	}
 }
 
@@ -149,4 +151,28 @@ func (s *DefaultUIService) Articles() []Component {
 			"date":    "2023-10-02",
 		}},
 	}
+}
+
+// Combined returns a composed page pulling pieces from multiple screens.
+func (s *DefaultUIService) Combined() []Component {
+	// Take featured products, a small profile block, a list, forms and some articles
+	products := s.Products()
+	profile := s.Profile()
+	list := s.ListDetail()
+	forms := s.Forms()
+	articles := s.Articles()
+
+	// Assemble: heading, products, divider, profile, divider, list, divider, forms, divider, articles
+	comps := []Component{{Type: "heading", Props: map[string]interface{}{"text": "Combined Overview", "level": 1}}}
+	comps = append(comps, products...)
+	comps = append(comps, Component{Type: "divider", Props: map[string]interface{}{}})
+	comps = append(comps, profile...)
+	comps = append(comps, Component{Type: "divider", Props: map[string]interface{}{}})
+	comps = append(comps, list...)
+	comps = append(comps, Component{Type: "divider", Props: map[string]interface{}{}})
+	comps = append(comps, forms...)
+	comps = append(comps, Component{Type: "divider", Props: map[string]interface{}{}})
+	comps = append(comps, articles...)
+
+	return comps
 }

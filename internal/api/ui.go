@@ -47,3 +47,7 @@ func FormsHandler(svc services.UIService) gin.HandlerFunc {
 func ArticlesHandler(svc services.UIService) gin.HandlerFunc {
 	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Articles()) }
 }
+
+func CombinedHandler(svc services.UIService) gin.HandlerFunc {
+	return func(c *gin.Context) { c.JSON(http.StatusOK, svc.Combined()) }
+}

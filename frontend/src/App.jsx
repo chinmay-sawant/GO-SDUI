@@ -48,6 +48,7 @@ export default function App(){
       case '/list-detail': return <ListDetail components={uiComponents} onAction={handleAction} />
       case '/forms': return <Forms components={uiComponents} onAction={handleAction} />
       case '/articles': return <Articles components={uiComponents} onAction={handleAction} />
+      case '/combined': return <ComponentRenderer components={uiComponents} onAction={handleAction} />
       default: return <ComponentRenderer components={uiComponents} onAction={handleAction} />
     }
   }
