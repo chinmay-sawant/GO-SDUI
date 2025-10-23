@@ -34,7 +34,7 @@ export default function App(){
   return (
     <div className="app">
       <NavBar nav={nav} onNavigate={p=>setCurrentPath(p)} active={currentPath} />
-      <main className="container">
+      <main className={`container ${currentPath.slice(1)}-page`}>
         <ComponentRenderer components={uiComponents} onAction={handleAction} />
       </main>
     </div>

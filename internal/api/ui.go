@@ -31,7 +31,7 @@ func NavHandler(c *gin.Context) {
 // HomeHandler returns the home screen components
 func HomeHandler(c *gin.Context) {
 	comps := []Component{
-		{Type: "heading", Props: map[string]interface{}{"text": "Welcome Back!2", "level": 1}},
+		{Type: "heading", Props: map[string]interface{}{"text": "Welcome Back!", "level": 1}},
 		{Type: "paragraph", Props: map[string]interface{}{"text": "Explore new features and products."}},
 		{Type: "image", Props: map[string]interface{}{"src": "https://picsum.photos/600/200", "alt": "Banner"}},
 		{Type: "button", Props: map[string]interface{}{"text": "View Products", "actionId": "navigate_products"}},

@@ -10,8 +10,8 @@ function Paragraph({props}){
   return <p>{props.text}</p>
 }
 
-function Image({props}){
-  return <img src={props.src} alt={props.alt||''} style={{maxWidth:'100%'}} />
+function Image({props}) {
+  return <img src={props.src} alt={props.alt||''} />
 }
 
 function Button({props, onAction}){
@@ -44,8 +44,7 @@ function ProductList({props, onAction}){
 function StatItem({props}){
   return (
     <div className="stat-item">
-      <div className="label">{props.label}</div>
-      <div className="value">{props.value}</div>
+      <span className="label">{props.label}:</span> <span className="value">{props.value}</span>
     </div>
   )
 }
@@ -65,7 +64,7 @@ export default function ComponentRenderer({components, onAction}){
           case 'product_card': return <ProductCard key={i} props={props} />
           case 'stat_item': return <StatItem key={i} props={props} />
           case 'divider': return <hr key={i} />
-          default: return <div key={i}>Unknown component: {c.type}</div>
+          default: return <div key={i} className="unknown-component">Unknown component: {c.type}</div>
         }
       })}
     </div>
