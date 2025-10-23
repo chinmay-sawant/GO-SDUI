@@ -16,12 +16,7 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	apiRouter := r.Group("/api/ui")
-	{
-		apiRouter.GET("/nav", api.NavHandler)
-		apiRouter.GET("/home", api.HomeHandler)
-		apiRouter.GET("/products", api.ProductsHandler)
-		apiRouter.GET("/profile", api.ProfileHandler)
-	}
+	api.RegisterRoutes(apiRouter)
 
 	// Simple health
 	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "ok") })

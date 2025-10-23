@@ -1,53 +1,17 @@
 import React from 'react'
-
-function Heading({props}){
-  const level = props.level || 1
-  const Tag = `h${Math.min(Math.max(level,1),6)}`
-  return <Tag>{props.text}</Tag>
-}
-
-function Paragraph({props}){
-  return <p>{props.text}</p>
-}
-
-function Image({props}) {
-  return <img src={props.src} alt={props.alt||''} />
-}
-
-function Button({props, onAction}){
-  return <button onClick={()=>onAction(props.actionId)}>{props.text}</button>
-}
-
-function ProductCard({props}){
-  return (
-    <div className="product-card">
-      <img src={props.imageSrc} alt={props.name} />
-      <div className="product-info">
-        <strong>{props.name}</strong>
-        <div>{props.price}</div>
-      </div>
-    </div>
-  )
-}
-
-function ProductList({props, onAction}){
-  const items = props.items || []
-  return (
-    <div className="product-list">
-      {items.map((it, idx)=> (
-        <ComponentRenderer key={idx} components={[it]} onAction={onAction} />
-      ))}
-    </div>
-  )
-}
-
-function StatItem({props}){
-  return (
-    <div className="stat-item">
-      <span className="label">{props.label}:</span> <span className="value">{props.value}</span>
-    </div>
-  )
-}
+import Heading from './components/Heading'
+import Paragraph from './components/Paragraph'
+import Image from './components/Image'
+import Button from './components/Button'
+import ProductCard from './components/ProductCard'
+import ProductList from './components/ProductList'
+import StatItem from './components/StatItem'
+import Divider from './components/Divider'
+import List from './components/List'
+import ListItem from './components/ListItem'
+import FormInput from './components/FormInput'
+import FormButton from './components/FormButton'
+import Article from './components/Article'
 
 export default function ComponentRenderer({components, onAction}){
   if(!components) return null
@@ -63,7 +27,12 @@ export default function ComponentRenderer({components, onAction}){
           case 'product_list': return <ProductList key={i} props={props} onAction={onAction} />
           case 'product_card': return <ProductCard key={i} props={props} />
           case 'stat_item': return <StatItem key={i} props={props} />
-          case 'divider': return <hr key={i} />
+          case 'divider': return <Divider key={i} />
+          case 'list': return <List key={i} props={props} onAction={onAction} />
+          case 'list_item': return <ListItem key={i} props={props} onAction={onAction} />
+          case 'form_input': return <FormInput key={i} props={props} />
+          case 'form_button': return <FormButton key={i} props={props} onAction={onAction} />
+          case 'article': return <Article key={i} props={props} />
           default: return <div key={i} className="unknown-component">Unknown component: {c.type}</div>
         }
       })}
