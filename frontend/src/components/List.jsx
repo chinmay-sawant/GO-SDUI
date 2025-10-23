@@ -6,7 +6,9 @@ function List({props, onAction}){
   return (
     <div className="list">
       {items.map((it, idx)=> (
-        <ComponentRenderer key={idx} components={[it]} onAction={onAction} />
+        <div key={idx} className="list-row card">
+          <ComponentRenderer components={[it]} onAction={onAction} />
+        </div>
       ))}
     </div>
   )

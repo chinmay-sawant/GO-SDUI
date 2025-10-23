@@ -3,8 +3,11 @@ import ComponentRenderer from '../ComponentRenderer'
 
 export default function Forms({components, onAction}){
   return (
-    <div className="forms-page">
-      <ComponentRenderer components={components} onAction={onAction} />
+    <div className="page forms-page">
+      <div className="card">
+        <h2>Form</h2>
+        <ComponentRenderer components={components} onAction={onAction} />
+      </div>
     </div>
   )
 }

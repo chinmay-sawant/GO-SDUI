@@ -3,8 +3,12 @@ import ComponentRenderer from '../ComponentRenderer'
 
 export default function Detail({components, onAction}){
   return (
-    <div className="detail-page">
-      <ComponentRenderer components={components} onAction={onAction} />
+    <div className="page detail-page">
+      <div className="detail card">
+        <div className="detail-main">
+          <ComponentRenderer components={components} onAction={onAction} />
+        </div>
+      </div>
     </div>
   )
 }
