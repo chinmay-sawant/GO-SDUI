@@ -5,6 +5,7 @@ import (
 
 	"sdui/internal/api"
 	"sdui/internal/middleware"
+	"sdui/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,12 +17,11 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	apiRouter := r.Group("/api/ui")
-	{
-		apiRouter.GET("/nav", api.NavHandler)
-		apiRouter.GET("/home", api.HomeHandler)
-		apiRouter.GET("/products", api.ProductsHandler)
-		apiRouter.GET("/profile", api.ProfileHandler)
-	}
+	// use the default service implementation
+	svc := services.NewDefaultUIService()
+	// wire routes via the Routes abstraction
+	routes := api.NewDefaultRoutes(svc)
+	routes.Register(apiRouter)
 
 	// Simple health
 	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
