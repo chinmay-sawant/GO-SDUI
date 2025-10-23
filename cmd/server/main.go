@@ -5,6 +5,7 @@ import (
 
 	"sdui/internal/api"
 	"sdui/internal/middleware"
+	"sdui/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +18,7 @@ func main() {
 
 	apiRouter := r.Group("/api/ui")
 	// use the default service implementation
-	svc := api.NewDefaultUIService()
+	svc := services.NewDefaultUIService()
 	// wire routes via the Routes abstraction
 	routes := api.NewDefaultRoutes(svc)
 	routes.Register(apiRouter)

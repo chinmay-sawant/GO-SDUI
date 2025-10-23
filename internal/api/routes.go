@@ -1,6 +1,10 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"sdui/internal/services"
+
+	"github.com/gin-gonic/gin"
+)
 
 // Routes is an interface capable of registering UI routes onto a gin RouterGroup.
 // This allows the registration behaviour to be swapped or mocked in tests.
@@ -11,11 +15,11 @@ type Routes interface {
 // DefaultRoutes is the package-provided implementation of Routes.
 // It holds a UIService which is used by the handlers it registers.
 type DefaultRoutes struct {
-	svc UIService
+	svc services.UIService
 }
 
 // NewDefaultRoutes constructs a DefaultRoutes instance using the provided UIService.
-func NewDefaultRoutes(svc UIService) Routes {
+func NewDefaultRoutes(svc services.UIService) Routes {
 	return &DefaultRoutes{svc: svc}
 }
 
@@ -34,11 +38,11 @@ func (dr *DefaultRoutes) Register(rg *gin.RouterGroup) {
 
 // RegisterRoutes preserves the original helper signature while delegating to
 // the DefaultRoutes implementation.
-func RegisterRoutes(rg *gin.RouterGroup, svc UIService) {
+func RegisterRoutes(rg *gin.RouterGroup, svc services.UIService) {
 	NewDefaultRoutes(svc).Register(rg)
 }
 
 // RegisterRoutesDefault preserves the old signature by wiring the default service.
 func RegisterRoutesDefault(rg *gin.RouterGroup) {
-	RegisterRoutes(rg, NewDefaultUIService())
+	RegisterRoutes(rg, services.NewDefaultUIService())
 }
